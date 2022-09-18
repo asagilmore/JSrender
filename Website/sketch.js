@@ -1,8 +1,23 @@
-let renderWidth = 100;
-let renderHeight = 100;
+let renderWidth = 200;
+let renderHeight = 200;
 function setup() {
   createCanvas(renderWidth,renderHeight); //set window size
   pixelDensity(1); //pixel density matches display
+  let img = createImage(renderWidth, renderHeight);
+  img.loadPixels();
+  for (let i = 0; i < img.width; i++){
+    for (let j = 0; j < img.height; j++) {
+      let intersect = calcIntersects(castRay(i,j));
+      //console.log("calc intersect pixel "+i+", "+j+" == "+intersect);
+      if (intersect  == false){
+        img.set(i,j,color(200,200,200));
+      }else{
+        img.set(i,j,color(255,0,0));
+      }
+    }
+  } 
+  img.updatePixels();
+  image(img, 0, 0);
 }
 
 const cameraPos = [0,0,0,0,0];  // x,y,z, X-rotation(yaw), Y-rotation(pitch)
@@ -58,24 +73,6 @@ function getView(){ //i dont need this anymore, delete later
 }
 
 function draw() {
-  background(220);
-
-  let img = createImage(renderWidth, renderHeight);
-  img.loadPixels();
-  for (let i = 0; i < img.width; i++){
-    for (let j = 0; j < img.height; j++) {
-      let intersect = calcIntersects(castRay(i,j));
-      //console.log("calc intersect pixel "+i+", "+j+" == "+intersect);
-      if (intersect  == false){
-        img.set(i,j,color(200,200,200));
-      }else{
-        img.set(i,j,color(255,0,0));
-      }
-    }
-  } 
-  img.updatePixels();
-  image(img, 0, 0);
-  console.log("function.draw(): 'draw completed'")
 }
 
 function castRay(Xpixel,Ypixel){ //input =/= 0 // outputs [[x,y,z],[x,y,z]] that defines the ray  //do I need width and height as input? I dont think so but using global might cause problems later?? fix if needed.  
@@ -132,7 +129,10 @@ function calcIntersects(ray){ // input as array [[x,y,z],[x,y,z]]
     }
   } 
 }
+
 console.log(castRay(50,50));
 console.log("test" + calcIntersects([[0,0,0],[0,-20,0]]));
 console.log((renderHeight/renderWidth));
 console.log("castRay:"+castRay(100,100));
+
+render();
