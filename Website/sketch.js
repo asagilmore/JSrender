@@ -1,28 +1,13 @@
 let renderWidth = 200;
 let renderHeight = 200;
+
 function setup() {
   createCanvas(renderWidth,renderHeight); //set window size
-  pixelDensity(1); //pixel density matches display
-  let img = createImage(renderWidth, renderHeight);
-  img.loadPixels();
-  for (let i = 0; i < img.width; i++){
-    for (let j = 0; j < img.height; j++) {
-      let intersect = calcIntersects(castRay(i,j));
-      //console.log("calc intersect pixel "+i+", "+j+" == "+intersect);
-      if (intersect  == false){
-        img.set(i,j,color(200,200,200));
-      }else{
-        img.set(i,j,color(255,0,0));
-      }
-    }
-  } 
-  img.updatePixels();
-  image(img, 0, 0);
 }
 
 const cameraPos = [0,0,0,0,0];  // x,y,z, X-rotation(yaw), Y-rotation(pitch)
 const viewPlane = [[0,0,0],[0,0,0],[0,0,0],[0,0,0]]; //Not needed delete later //top left, top right, bottom left, bottom right // [x,y,z] 
-var spheres = [[10,0,0,1]]; // defines spheres in scene as [x,y,z,radius]
+var spheres = [[10,0,0,1],[13,2,-2,1],[15,2,2,1]]; // defines spheres in scene as [x,y,z,radius]
 function getView(){ //i dont need this anymore, delete later
   console.log("getView() start");
   //widith = render; //FIX!!!! get aspect ratio, use float value for aspect ratio
@@ -73,6 +58,22 @@ function getView(){ //i dont need this anymore, delete later
 }
 
 function draw() {
+  let img = createImage(renderWidth, renderHeight);
+  img.loadPixels();
+  for (let i = 0; i < img.width; i++){
+    for (let j = 0; j < img.height; j++) {
+      let intersect = calcIntersects(castRay(i,j));
+      //console.log("calc intersect pixel "+i+", "+j+" == "+intersect);
+      if (intersect  == false){
+        img.set(i,j,color(200,200,200));
+      }else{
+        img.set(i,j,color(255,0,0));
+      }
+    }
+  } 
+  img.updatePixels();
+  image(img, 0, 0);
+  console.log("render complete"); 
 }
 
 function castRay(Xpixel,Ypixel){ //input =/= 0 // outputs [[x,y,z],[x,y,z]] that defines the ray  //do I need width and height as input? I dont think so but using global might cause problems later?? fix if needed.  
@@ -105,7 +106,7 @@ function castRay(Xpixel,Ypixel){ //input =/= 0 // outputs [[x,y,z],[x,y,z]] that
 
 function calcIntersects(ray){ // input as array [[x,y,z],[x,y,z]]
   const intersections = [];
-  console.log(ray);
+  //console.log(ray);
   for (intsphere in spheres){ //change later to accept other shapes, make array of objects and calculate all by distance.
     let vx = (ray[1][0]-ray[0][0]);
     let vy = (ray[1][1]-ray[0][1]);
@@ -115,7 +116,7 @@ function calcIntersects(ray){ // input as array [[x,y,z],[x,y,z]]
     let C = ray[1][0]*ray[1][0] - 2*ray[1][0]*spheres[intsphere][0] + spheres[intsphere][0]*spheres[intsphere][0] + ray[1][1]*ray[1][1] - 2*ray[1][1]*spheres[intsphere][1] + spheres[intsphere][1]*spheres[intsphere][1] + ray[1][2]*ray[1][2] - 2*ray[1][2]*spheres[intsphere][2] + spheres[intsphere][2]*spheres[intsphere][2] - spheres[intsphere][3]*spheres[intsphere][3];
     let D = B*B - 4*(A*C);
     let t = 0;
-    console.log("A = "+A+" B = "+B+" C = " + C +" discriminant = "+D);
+    //console.log("A = "+A+" B = "+B+" C = " + C +" discriminant = "+D);
     if (D >= 0){
       let t1 = (-B - Math.sqrt(D)) / (2*A);
       let t2 = (-B + Math.sqrt(D)) / (2*A);
@@ -124,15 +125,31 @@ function calcIntersects(ray){ // input as array [[x,y,z],[x,y,z]]
       }else{
         return t2;
       }
-    }else{
-      return false;
     }
   } 
+  return false;
 }
 
-console.log(castRay(50,50));
-console.log("test" + calcIntersects([[0,0,0],[0,-20,0]]));
-console.log((renderHeight/renderWidth));
-console.log("castRay:"+castRay(100,100));
+var cameraX = document.getElementById("cameraX");
+var cameraY = document.getElementById("cameraY");
+var cameraZ = document.getElementById("cameraZ");
+var cameraYaw = document.getElementById("cameraYaw");
+var cameraPitch = document.getElementById("cameraPitch");
 
-render();
+cameraX.oninput = function(){
+  cameraPos[0]= this.value*0.1;
+}
+cameraY.oninput = function(){
+  cameraPos[1]= this.value*0.1;
+}
+cameraZ.oninput = function(){
+  cameraPos[2]= this.value*0.1;
+}
+cameraYaw.oninput = function(){
+  cameraPos[3]= this.value;
+}
+cameraPitch.oninput = function(){
+  cameraPos[4]= this.value;
+}
+
+
