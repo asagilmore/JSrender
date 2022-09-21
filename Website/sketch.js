@@ -10,14 +10,14 @@ const cameraPos = [0,0,0,0,0];  // x,y,z, X-rotation(yaw), Y-rotation(pitch)
 const viewPlane = [[0,0,0],[0,0,0],[0,0,0],[0,0,0]]; //Not needed delete later //top left, top right, bottom left, bottom right // [x,y,z] 
 var spheres = [[10,0,0,1],[20,5,5,2],[25,-5,-4,0.5]]; // defines spheres in scene as [x,y,z,radius]
 camFov = 1;
-camFov2 = 180;
+camFov2 = 180; // this is used by castRay2(), not needed in current rendering implimentation.
 
-fov.oninput = function(){
+fov.oninput = function(){ 
   camFov = this.value;
   camFov2 = this.value;
 }
 
-resolution.oninput = function(){
+resolution.oninput = function(){ //resoluton input
   if (this.value >= 1){
     renderHeight = this.value;
     renderWidth = this.value;
@@ -75,7 +75,7 @@ function castRay(Xpixel,Ypixel){ //input =/= 0 // outputs [[x,y,z],[x,y,z]] that
   return ray;
 }
 
-function castRay2(Xpixel,Ypixel){
+function castRay2(Xpixel,Ypixel){ // this was an attempt at casting rays differently to avoid some artifacts of the viewplane method, but it has a number of weird effects
   const ray = [[0,0,0],[1,0,0]];
   var yawTrig = [Math.sin(toRadians((((Xpixel/renderWidth)*camFov2)-camFov2/2) + cameraPos[3] )) , Math.cos(toRadians( (((Xpixel/renderWidth)*camFov2)-camFov2/2) + cameraPos[3] ))];
   var pitchTrig = [Math.sin(toRadians((((Ypixel/renderHeight)*camFov2)-camFov2/2) + (cameraPos[4])) ) , Math.cos(toRadians( (((Ypixel/renderHeight)*camFov2)-camFov2/2) + cameraPos[4]) )] ;
@@ -94,7 +94,7 @@ function castRay2(Xpixel,Ypixel){
   return ray;
 } 
 
-function calcIntersects(ray){ // input as array [[x,y,z],[x,y,z]]
+function calcIntersects(ray){ // input as array [[x,y,z],[x,y,z]], outputs false, or [x,y,z,distance from camera] of point of intersection
   const intersections = [];
   //console.log(ray);
   for (intsphere in spheres){ //change later to accept other shapes, make array of objects and calculate all by distance.
@@ -135,6 +135,8 @@ var cameraZ = document.getElementById("cameraZ");
 var cameraYaw = document.getElementById("cameraYaw");
 var cameraPitch = document.getElementById("cameraPitch");
 
+//website inputs
+
 cameraX.oninput = function(){
   cameraPos[0]= this.value*0.1;
 }
@@ -150,6 +152,3 @@ cameraYaw.oninput = function(){
 cameraPitch.oninput = function(){
   cameraPos[4]= this.value*0.25;
 }
-
-
-calcIntersects([0,0,0],[1,1,1]);
