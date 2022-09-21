@@ -1,5 +1,6 @@
-let renderWidth = 1000;
-let renderHeight = 1000;
+
+let renderWidth = 100;
+let renderHeight = 100;
 
 function setup() {
   createCanvas(renderWidth,renderHeight); //set window size
@@ -16,9 +17,18 @@ fov.oninput = function(){
   camFov2 = this.value;
 }
 
+resolution.oninput = function(){
+  if (this.value >= 1){
+    renderHeight = this.value;
+    renderWidth = this.value;
+  }else{
+    renderHeight = 10;
+    renderWidth = 10;
+  }
+}
+
 function draw() {
-  renderWidth = 200;
-  renderHeight = 200;
+  createCanvas(renderWidth,renderHeight);
   let img = createImage(renderWidth, renderHeight);
   img.loadPixels();
   for (let i = 0; i < img.width; i++){
@@ -27,7 +37,7 @@ function draw() {
       if (intersect  == false){
         img.set(i,j,color(200,200,200));
       }else{
-        img.set(i,j,color(intersect[3]*10,intersect[3]*1,0));
+        img.set(i,j,color(255-intersect[3]*10,0,255-intersect[3]*6));
       }
     }
   } 
